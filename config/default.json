@@ -1,0 +1,11 @@
+{
+    "logging": {
+        "console": {
+            "level": "silly",
+            "showMessagePrefix": false,
+            "abbreviateLevel": true,
+            "logMetadata": true,
+            "colorize": true
+        }
+    }
+}

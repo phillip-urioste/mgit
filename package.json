@@ -1,0 +1,19 @@
+{
+  "name": "mgit",
+  "version": "0.1.0",
+  "description": "Multi-project git",
+  "main": "mgit.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Phillip Urioste",
+  "license": "ISC",
+  "dependencies": {
+    "caller": "^1.0.1",
+    "colors": "^1.3.2",
+    "config": "^2.0.1",
+    "glob": "^7.1.3",
+    "moment": "^2.22.2",
+    "winston": "^3.1.0"
+  }
+}
