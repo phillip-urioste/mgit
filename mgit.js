@@ -1,6 +1,6 @@
 "use strict";
 
-const glob = require( "glob" );
+const glob = require( "multi-glob" ).glob;
 const {spawn} = require( "child_process" );
 const {resolve} = require( "path" );
 
@@ -8,8 +8,10 @@ const log = require( "./logger.js" )( "mgit" );
 
 const cwd = process.cwd();
 
-const targetPaths = require( `${cwd}/mgit/config.json` ).targetPaths
-    .map( targetPath => resolve( targetPath.replace( /\$\{([a-zA-Z0-9_]+)\}/g, (match, envVar) => process.env[envVar] ) ) ); // replace ${var} with env var
+const targetPaths = require( `${cwd}/mgit/config.json` ).targetPaths.map( targetPath => ({
+    ...targetPath,
+    path: resolve( targetPath.path.replace( /\$\{([a-zA-Z0-9_]+)\}/g, (match, envVar) => process.env[envVar] ) )
+})); // replace ${var} with env var
 
 let allcmds = new Map( [] );
 
@@ -21,7 +23,6 @@ const spawnGit = (path, args) => new Promise( (res, rej) => {
             return rej( new Error( code ) );
         }
 
-        log.info( "" );
         log.info( "" );
         log.info( "" );
 
@@ -38,12 +39,12 @@ const run = async (paths, args) => {
 
     // else run git with the given args in each folder
     for( let i=0; i<paths.length; ++i ) {
-        await spawnGit( paths[i], args );
+        await spawnGit( paths[i].path, args );
     }
 };
 
 const findCommands = () => new Promise( (res, rej) => {
-    glob( `${cwd}/mgit/cmds/*.js`, (e, files) => {
+    glob( [`${__dirname}/cmds/*.js`, `${cwd}/mgit/cmds/*.js`], (e, files) => {
         if( e ) {
             return rej( new Error( `${e}` ) );
         }
@@ -51,6 +52,9 @@ const findCommands = () => new Promise( (res, rej) => {
         try {
             files.forEach( file => {
                 log.debug( `Found commands: ${file}` );
+            });
+
+            files.forEach( file => {
 
                 let cmds = require( file ).cmds;
 
